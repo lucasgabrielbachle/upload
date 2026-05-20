@@ -1,0 +1,70 @@
+<div class="min-h-screen bg-gray-50 py-8 px-4 sm:px-6 lg:px-8 font-sans">
+  <div class="max-w-5xl mx-auto">
+    
+    <header class="mb-8 border-b border-gray-200 pb-5">
+      <h1 class="text-3xl font-bold text-gray-900 tracking-tight">Galeria de Fotos</h1>
+      <p class="mt-2 text-sm text-gray-500">Total de arquivos: <span class="font-semibold text-indigo-600">{{ totalFiles }}</span></p>
+    </header>
+
+    <div 
+      (dragover)="onDragOver($event)"
+      (dragleave)="onDragLeave()"
+      (drop)="onDrop($event)"
+      [ngClass]="{'border-indigo-500 bg-indigo-50': isDragging, 'border-gray-300 bg-white': !isDragging}"
+      class="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-dashed rounded-xl transition-all duration-200 shadow-sm relative group hover:border-indigo-400">
+      
+      <div class="space-y-1 text-center">
+        <svg class="mx-auto h-12 w-12 text-gray-400 group-hover:text-indigo-500 transition-colors" stroke="currentColor" fill="none" viewBox="0 0 48 48" aria-hidden="true">
+          <path d="M28 8H12a4 4 0 00-4 4v20m32-12v8m0 0v8a4 4 0 01-4 4H12a4 4 0 01-4-4v-4m32-4l-3.172-3.172a4 4 0 00-5.656 0L28 28M8 32l9.172-9.172a4 4 0 015.656 0L28 28m0 0l4 4m4-24h8m-4-4v8m-12 4h.02" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+        </svg>
+        
+        <div class="flex text-sm text-gray-600 justify-center pt-2">
+          <label for="file-upload" class="relative cursor-pointer rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none">
+            <span>Faça upload de uma foto</span>
+            <input id="file-upload" name="file-upload" type="file" accept="image/*" class="sr-only" (change)="onFileSelected($event)">
+          </label>
+          <p class="pl-1">ou arraste e solte aqui</p>
+        </div>
+        <p class="text-xs text-gray-500">PNG, JPG, GIF até 10MB</p>
+      </div>
+
+      <div *ngIf="isLoading" class="absolute inset-0 bg-white/70 rounded-xl flex items-center justify-center backdrop-blur-sm">
+        <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+      </div>
+    </div>
+
+    <main class="mt-10">
+      <h2 class="text-xl font-semibold text-gray-900 mb-6">Suas Imagens</h2>
+      
+      <div *ngIf="files.length === 0 && !isLoading" class="text-center py-12 bg-white rounded-xl border border-gray-200 shadow-sm">
+        <p class="text-gray-500">Nenhuma imagem encontrada. Faça o primeiro upload acima!</p>
+      </div>
+
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-6">
+        <div *ngFor="let file of files" class="group bg-white rounded-xl overflow-hidden border border-gray-200 shadow-sm hover:shadow-md transition-shadow duration-200 flex flex-col">
+          
+          <div class="aspect-square bg-gray-100 overflow-hidden relative border-b border-gray-100">
+            <img 
+              [src]="photoService.baseUrl + file.filename" 
+              [alt]="file.filename"
+              class="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-200"
+              loading="lazy"
+            />
+          </div>
+
+          <div class="p-3 flex-1 flex flex-col justify-between">
+            <p class="text-xs font-medium text-gray-700 truncate" [title]="file.filename">
+              {{ file.filename }}
+            </p>
+            <div class="flex items-center justify-between mt-2 pt-1 border-t border-gray-50 text-[10px] text-gray-400">
+              <span>{{ formatBytes(file.size) }}</span>
+              <span>{{ file.criado | date:'dd/MM/yyyy HH:mm' }}</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </main>
+
+  </div>
+</div>
