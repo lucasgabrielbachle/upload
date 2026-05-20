@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateArquivoDto } from './dto/create-arquivo.dto';
 import { UpdateArquivoDto } from './dto/update-arquivo.dto';
 import * as fs from 'fs';
@@ -52,7 +52,19 @@ export class ArquivoService {
     return `This action updates a #${id} arquivo`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} arquivo`;
+  remove(filename: string) {
+  const caminhoArquivo = `${this.pastaUpload}/${filename}`;
+console.log(`Tentando remover o arquivo: ${caminhoArquivo}`);
+  if (!fs.existsSync(caminhoArquivo)) {
+    throw new NotFoundException(
+      `Arquivo ${filename} não encontrado`,
+    );
   }
+
+  fs.unlinkSync(caminhoArquivo);
+
+  return {
+    mensagem: 'Arquivo removido com sucesso!',
+  };
+}
 }
